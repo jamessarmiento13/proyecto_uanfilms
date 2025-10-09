@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>UANFilms 🎬</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #111;
+            color: #eee;
+            text-align: center;
+            padding: 40px;
+        }
+        h1 { color: #ffcc00; }
+        a { color: #00ccff; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <h1>Bienvenido a UANFilms 🎬</h1>
+    <p>Explora películas, lee reseñas y gestiona tu catálogo.</p>
+    <p>
+        🔗 <a href="/admin/">Panel de Administración</a><br>
+        🔗 <a href="/api/peliculas/">Ver API de Películas</a><br>
+        🔗 <a href="/api/resenas/">Ver API de Reseñas</a>
+    </p>
+
+<script>
+fetch('/api/peliculas/', {
+  headers: { 'Accept': 'application/json' }
+})
+  .then(res => {
+    if (!res.ok) throw new Error(`Error HTTP ${res.status}`);
+    return res.json();
+  })
+  .then(data => {
+    const container = document.createElement('ul');
+    const peliculas = data.results || data; // ✅ usa results si existe
+
+    if (!Array.isArray(peliculas)) {
+      console.error('Respuesta inesperada de la API:', data);
+      return;
+    }
+
+    peliculas.forEach(p => {
+      const item = document.createElement('li');
+      item.textContent = `${p.nombre} (${p.ano})`;
+      container.appendChild(item);
+    });
+
+    document.body.appendChild(container);
+  })
+  .catch(err => console.error('Error cargando películas:', err));
+</script>
+</body>
+
+</html>
