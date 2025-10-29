@@ -34,6 +34,7 @@ class Resena(models.Model):
     puntaje = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(5)])
     texto = models.TextField()
     fecha = models.DateTimeField(auto_now_add=True)
+    archivo_blob = models.URLField(blank=True, null=True)   
 
     def __str__(self):
         usuario_str = getattr(self.usuario, "username", "Usuario eliminado")
