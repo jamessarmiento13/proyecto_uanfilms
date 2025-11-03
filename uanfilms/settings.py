@@ -159,14 +159,25 @@ TEMPLATES = [
     },
 ]
 
+
 STATIC_URL = '/static/'
-STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATICFILES_DIRS = [BASE_DIR / 'static']  # Carpeta local para desarrollo
+STATIC_ROOT = BASE_DIR / 'staticfiles'    # Carpeta donde collectstatic copiará archivos para Azure
 
-STATICFILES_DIRS = [
-    BASE_DIR / 'static',
+# Configuración de almacenamiento (sirve estilos en Azure con WhiteNoise)
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+# Middleware para servir archivos estáticos en producción
+MIDDLEWARE = [
+    'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # 👈 Asegúrate de tener esta línea
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
-
-STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
 
 
 mimetypes.add_type("text/css", ".css", True)
