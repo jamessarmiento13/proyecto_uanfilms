@@ -31,7 +31,11 @@ DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '').split(',')
 
-
+CSRF_TRUSTED_ORIGINS = [
+    'https://uanfilms-h3c7ejgqahgxftbd.centralus-01.azurewebsites.net',  # reemplaza con tu dominio real en Azure
+    'http://localhost:8000',
+    'http://127.0.0.1:8000',
+]
 # Application definition
 
 INSTALLED_APPS = [
