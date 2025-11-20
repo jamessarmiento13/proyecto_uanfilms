@@ -1,0 +1,157 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <title>{{ pelicula.nombre }} - UANFilms</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+
+<body>
+
+<header>🎬 UANFilms</header>
+
+<div class="detalle-container">
+
+    <div class="detalle-poster">
+        <img src="/static/img/poster_default.jpg" alt="{{ pelicula.nombre }}">
+    </div>
+
+    <div class="detalle-info">
+        <h1>{{ pelicula.nombre }} ({{ pelicula.ano }})</h1>
+
+        <p><strong>Género:</strong> {{ pelicula.genero }}</p>
+        <p><strong>Director:</strong> {{ pelicula.director }}</p>
+
+        {% if pelicula.elenco %}
+        <p><strong>Elenco:</strong> {{ pelicula.elenco }}</p>
+        {% endif %}
+
+        <h3>Sinopsis</h3>
+        <p>{{ pelicula.sinopsis }}</p>
+
+        <a href="/" class="btn-volver">← Volver</a>
+    </div>
+
+</div>
+
+<hr style="opacity:0.2; margin:40px 0;">
+
+<!-- ==============================
+    RESEÑAS EXISTENTES
+================================= -->
+<div class="resenas-container">
+
+    <h2>Reseñas</h2>
+
+    <div id="lista-resenas">
+        <p style="opacity:0.5;">Cargando reseñas...</p>
+    </div>
+
+    <button class="btn-agregar" onclick="abrirPopup()">➕ Agregar Reseña</button>
+
+</div>
+
+<!-- ==============================
+    POP-UP PARA AGREGAR RESEÑA
+================================= -->
+<div id="popup" class="popup">
+    <div class="popup-content">
+
+        <h3>Agregar Reseña</h3>
+
+        <label>Puntaje (1-5):</label>
+        <input type="number" id="puntaje" min="1" max="5">
+
+        <label>Texto:</label>
+        <textarea id="texto" rows="4"></textarea>
+
+        <button class="btn-agregar-reseña" onclick="enviarResena({{ pelicula.id }})">Enviar</button>
+        <button class="btn-cerrar" onclick="cerrarPopup()">Cancelar</button>
+    </div>
+</div>
+
+
+<script>
+// ===========================
+// CARGAR RESEÑAS EXISTENTES
+// ===========================
+async function cargarResenas() {
+    const cont = document.getElementById("lista-resenas");
+
+    const res = await fetch("/api/resenas/?pelicula={{ pelicula.id }}");
+    const data = await res.json();
+
+    // <-- CORRECCIÓN IMPORTANTE
+    const lista = Array.isArray(data) ? data : data.results;
+
+    cont.innerHTML = "";
+
+    if (!lista || lista.length === 0) {
+        cont.innerHTML = "<p style='opacity:0.6;'>No hay reseñas aún.</p>";
+        return;
+    }
+
+    lista.forEach(r => {
+        const div = document.createElement("div");
+        div.className = "resena";
+
+        div.innerHTML = `
+            <p><strong>Puntaje:</strong> ⭐ ${r.puntaje}</p>
+            <p>${r.texto}</p>
+            <hr style="opacity:0.2;">
+        `;
+
+        cont.appendChild(div);
+    });
+}
+
+cargarResenas();
+
+
+// ===========================
+// POPUP
+// ===========================
+function abrirPopup() {
+    document.getElementById("popup").style.display = "flex";
+}
+function cerrarPopup() {
+    document.getElementById("popup").style.display = "none";
+}
+
+
+// ===========================
+// ENVIAR RESEÑA
+// ===========================
+async function enviarResena(peliculaId) {
+    const puntaje = document.getElementById("puntaje").value;
+    const texto = document.getElementById("texto").value;
+
+    const token = localStorage.getItem("access"); // el usuario debe haber iniciado sesión
+
+    const res = await fetch("/api/resenas/", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify({
+            puntaje,
+            texto,
+            pelicula: peliculaId
+        })
+    });
+
+    if (!res.ok) {
+        alert("Error al enviar reseña");
+        return;
+    }
+
+    cerrarPopup();
+    cargarResenas();
+    alert("Reseña enviada");
+}
+</script>
+
+</body>
+</html>

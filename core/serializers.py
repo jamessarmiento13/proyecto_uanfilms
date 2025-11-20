@@ -4,7 +4,7 @@ from .models import Pelicula, Resena
 class PeliculaSerializer(serializers.ModelSerializer):
     class Meta:
         model = Pelicula
-        fields = '__all__'
+        fields = ['id', 'nombre', 'ano', 'director', 'genero', 'sinopsis']
     
     def validate(self, data):
         """

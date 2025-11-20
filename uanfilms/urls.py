@@ -21,6 +21,9 @@ from core.views import home
 urlpatterns = [
     path('', home),
     path('admin/', admin.site.urls),
-    path('api/', include('core.urls')),
+    path("api/", include("core.urls_api")),
+
+    # ===== FRONTEND =====
+    path("", include("core.urls_frontend")),
 ]
 

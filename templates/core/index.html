@@ -1,57 +1,73 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" />
     <title>UANFilms</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #111;
-            color: #eee;
-            text-align: center;
-            padding: 40px;
-        }
-        h1 { color: #ffcc00; }
-        a { color: #00ccff; text-decoration: none; }
-        a:hover { text-decoration: underline; }
-    </style>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
+
 <body>
-    <h1>Bienvenido a UANFilms 🎬</h1>
-    <p>Explora películas, lee reseñas y gestiona tu catálogo.</p>
-    <p>
-        🔗 <a href="/admin/">Panel de Administración</a><br>
-        🔗 <a href="/api/peliculas/">Ver API de Películas</a><br>
-        🔗 <a href="/api/resenas/">Ver API de Reseñas</a>
-    </p>
+
+<header>🎬 UANFilms</header>
+
+<!-- TENDENCIAS -->
+<div class="list-container">
+    <h3>Tendencias</h3>
+    <div id="pelis-tendencias" class="peliculas-container">
+        <p style="color:#ccc;">Cargando...</p>
+    </div>
+</div>
+
+<!-- RECIENTES -->
+<div class="list-container">
+    <h3>Recientes</h3>
+    <div id="pelis-recientes" class="peliculas-container">
+        <p style="color:#ccc;">Cargando...</p>
+    </div>
+</div>
 
 <script>
-fetch('/api/peliculas/', {
-  headers: { 'Accept': 'application/json' }
-})
-  .then(res => {
-    if (!res.ok) throw new Error(`Error HTTP ${res.status}`);
-    return res.json();
-  })
-  .then(data => {
-    const container = document.createElement('ul');
-    const peliculas = data.results || data; // ✅ usa results si existe
 
-    if (!Array.isArray(peliculas)) {
-      console.error('Respuesta inesperada de la API:', data);
-      return;
+async function cargarLista(idContenedor){
+    const cont = document.getElementById(idContenedor);
+
+    try {
+        const res = await fetch("/api/peliculas/");
+        const data = await res.json();
+        const pelis = Array.isArray(data) ? data : data.results || [];
+
+        cont.innerHTML = "";
+
+        pelis.forEach(p => {
+
+            const card = document.createElement("div");
+            card.className = "card";
+
+            card.innerHTML = `
+                <a href="/pelicula/${p.id}/">
+                    <img src="/static/img/poster_default.jpg"
+                        alt="${p.nombre}" class="poster">
+                </a>
+                <div class="info">
+                    <h3>${p.nombre}</h3> 
+                    <p>${p.genero || "Género desconocido"}</p>
+                </div>
+            `;
+
+            cont.appendChild(card);
+        });
+
+    } catch (e) {
+        console.error("Error:", e);
+        cont.innerHTML = "<p style='color:red;'>Error cargando películas</p>";
     }
+}
 
-    peliculas.forEach(p => {
-      const item = document.createElement('li');
-      item.textContent = `${p.nombre} (${p.ano})`;
-      container.appendChild(item);
-    });
+cargarLista("pelis-tendencias");
+cargarLista("pelis-recientes");
 
-    document.body.appendChild(container);
-  })
-  .catch(err => console.error('Error cargando películas:', err));
 </script>
-</body>
 
+</body>
 </html>
