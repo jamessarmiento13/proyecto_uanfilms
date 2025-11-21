@@ -1,15 +1,6 @@
-{% load static %}
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8" />
-    <title>{{ pelicula.nombre }} - UANFilms</title>
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
-</head>
+{% extends "core/base.html" %}
 
-<body>
-
-<header>🎬 UANFilms</header>
+{% block content %}
 
 <div class="detalle-container">
 
@@ -66,8 +57,8 @@
         <label>Texto:</label>
         <textarea id="texto" rows="4"></textarea>
 
-        <button class="btn-agregar-reseña" onclick="enviarResena({{ pelicula.id }})">Enviar</button>
-        <button class="btn-cerrar" onclick="cerrarPopup()">Cancelar</button>
+        <button id="btn-agregar" onclick="enviarResena({{ pelicula.id }})">Enviar</button>
+        <button id="btn-cerrar" onclick="cerrarPopup()">Cancelar</button>
     </div>
 </div>
 
@@ -82,7 +73,6 @@ async function cargarResenas() {
     const res = await fetch("/api/resenas/?pelicula={{ pelicula.id }}");
     const data = await res.json();
 
-    // <-- CORRECCIÓN IMPORTANTE
     const lista = Array.isArray(data) ? data : data.results;
 
     cont.innerHTML = "";
@@ -126,32 +116,58 @@ function cerrarPopup() {
 async function enviarResena(peliculaId) {
     const puntaje = document.getElementById("puntaje").value;
     const texto = document.getElementById("texto").value;
-
-    const token = localStorage.getItem("access"); // el usuario debe haber iniciado sesión
-
-    const res = await fetch("/api/resenas/", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`
-        },
-        body: JSON.stringify({
-            puntaje,
-            texto,
-            pelicula: peliculaId
-        })
-    });
-
-    if (!res.ok) {
-        alert("Error al enviar reseña");
+    
+    // Validar que los campos no estén vacíos
+    if (!puntaje || !texto) {
+        alert("Por favor completa el puntaje y el texto.");
         return;
     }
 
-    cerrarPopup();
-    cargarResenas();
-    alert("Reseña enviada");
-}
-</script>
+    const token = localStorage.getItem("access");
 
-</body>
-</html>
+    if (!token) {
+        alert("Debes iniciar sesión para enviar una reseña.");
+        return;
+    }
+
+    try {
+        // CAMBIO AQUÍ: Usamos 'fetch' en lugar de 'fetchConToken'
+        const res = await fetch("/api/resenas/", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}` // El token se envía aquí
+            },
+            body: JSON.stringify({
+                puntaje: parseInt(puntaje), // Aseguramos que sea número
+                texto: texto,
+                pelicula: peliculaId
+            })
+        });
+
+        // Manejo de errores más detallado
+        if (!res.ok) {
+            const errorData = await res.json();
+            console.error("Error del servidor:", errorData); // Mira la consola (F12) para ver el error real
+            alert("Error al enviar: " + JSON.stringify(errorData));
+            return;
+        }
+
+        // Si todo salió bien
+        cerrarPopup();
+        
+        // Limpiar campos
+        document.getElementById("puntaje").value = "";
+        document.getElementById("texto").value = "";
+        
+        cargarResenas();
+        alert("Reseña enviada con éxito");
+
+    } catch (error) {
+        console.error("Error de red o código:", error);
+        alert("Ocurrió un error inesperado.");
+    }
+}
+
+</script>
+{% endblock %}

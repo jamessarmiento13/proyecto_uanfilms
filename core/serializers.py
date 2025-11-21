@@ -5,7 +5,7 @@ class PeliculaSerializer(serializers.ModelSerializer):
     class Meta:
         model = Pelicula
         fields = ['id', 'nombre', 'ano', 'director', 'genero', 'sinopsis']
-    
+        
     def validate(self, data):
         """
         Evita crear películas duplicadas con mismo nombre, año y director.
@@ -21,4 +21,5 @@ class PeliculaSerializer(serializers.ModelSerializer):
 class ResenaSerializer(serializers.ModelSerializer):
     class Meta:
         model = Resena
-        fields = '__all__'
+        fields = ['id', 'usuario', 'pelicula', 'puntaje', 'texto', 'fecha']
+        read_only_fields = ['usuario']

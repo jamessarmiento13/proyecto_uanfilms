@@ -20,7 +20,10 @@ class ResenaViewSet(viewsets.ModelViewSet):
     queryset = Resena.objects.all()
     serializer_class = ResenaSerializer
     filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['usuario', 'pelicula', 'puntaje']
+    filterset_fields = ['pelicula', 'puntaje']
+
+    def perform_create(self, serializer):
+        serializer.save(usuario=self.request.user)
     
 def home(request):
     """

@@ -1,0 +1,50 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}UANFilms{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+
+<header>
+    <div class="header-left">
+        <button class="btn-login" id="btn-login">Iniciar Sesión</button>
+
+        <div id="usuario-logueado" class="usuario-logueado" style="display:none;">
+            <button id="btn-logout" class="btn-logout">Cerrar Sesión</button>
+            👤 <span id="username"></span>
+        </div>
+    </div>
+
+    <div class="header-center">
+        🎬 UANFilms
+    </div>
+</header>
+
+<!-- POPUP LOGIN -->
+<div id="popup-login" class="popup">
+    <div class="popup-content-login">
+        <h3>Iniciar Sesión</h3>
+
+        <label>Usuario:</label>
+        <input type="text" id="login-username">
+
+        <label>Contraseña:</label>
+        <input type="password" id="login-password">
+
+        <button id="btn-submit-login">Ingresar</button>
+        <button id="btn-cerrar-login" class="btn-cerrar">Cancelar</button>
+    </div>
+</div>
+
+<!-- CONTENIDO DE CADA PÁGINA -->
+<div>
+    {% block content %}{% endblock %}
+</div>
+
+<script src="{% static 'js/auth.js' %}"></script>
+
+</body>
+</html>

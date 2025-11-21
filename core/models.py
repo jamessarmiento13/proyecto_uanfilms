@@ -29,7 +29,7 @@ class Pelicula(models.Model):
         return f"{self.nombre} ({self.ano})"
 
 class Resena(models.Model):
-    usuario = models.ForeignKey(User, on_delete=models.CASCADE)
+    usuario = models.ForeignKey(User, on_delete=models.CASCADE, related_name="resenas")
     pelicula = models.ForeignKey(Pelicula, on_delete=models.CASCADE, related_name='resenas')
     puntaje = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(5)])
     texto = models.TextField()
