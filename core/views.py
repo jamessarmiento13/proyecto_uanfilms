@@ -6,6 +6,11 @@ from django.shortcuts import render
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from django.shortcuts import render, get_object_or_404
 from .models import Pelicula
+from rest_framework.views import APIView       
+from rest_framework.response import Response   
+from rest_framework import status
+from .serializers import PeliculaSerializer, ResenaSerializer, UserRegisterSerializer 
+from django_filters.rest_framework import DjangoFilterBackend
 
 
 class PeliculaViewSet(viewsets.ModelViewSet):
@@ -42,3 +47,19 @@ def detalle_pelicula(request, id):
     
 def index(request):
     return render(request, 'core/index.html')
+
+class RegisterView(APIView):
+    """
+    Maneja la petición POST para registrar un nuevo usuario.
+    """
+    # Permitimos acceso sin autenticación
+    permission_classes = [] 
+
+    def post(self, request):
+        serializer = UserRegisterSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"message": "Usuario registrado exitosamente. Por favor, inicia sesión."}, status=status.HTTP_201_CREATED)
+        
+        # Si no es válido, retorna los errores de validación (por ejemplo, contraseñas no coinciden)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

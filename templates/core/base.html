@@ -10,11 +10,18 @@
 
 <header>
     <div class="header-left">
-        <button class="btn-login" id="btn-login">Iniciar Sesión</button>
+        <div id="auth-buttons-unlogged">
+            <button class="btn-login" id="btn-login">Iniciar Sesión</button>
+            <button class="btn-register" id="btn-register">Registrarse</button> 
+        </div>
 
-        <div id="usuario-logueado" class="usuario-logueado" style="display:none;">
-            <button id="btn-logout" class="btn-logout">Cerrar Sesión</button>
-            👤 <span id="username"></span>
+        <div id="auth-buttons-logged" style="display:none;">
+            <button class="btn-add-movie" id="btn-add-movie">🎬 Añadir Película</button>
+            
+            <div id="usuario-logueado" class="usuario-logueado">
+                👤 <span id="username"></span> 
+                <button id="btn-logout" class="btn-logout">Cerrar Sesión</button>
+            </div>
         </div>
     </div>
 
@@ -26,16 +33,72 @@
 <!-- POPUP LOGIN -->
 <div id="popup-login" class="popup">
     <div class="popup-content-login">
-        <h3>Iniciar Sesión</h3>
+        <h3 id="form-title">Iniciar Sesión</h3> 
 
-        <label>Usuario:</label>
-        <input type="text" id="login-username">
+        <div id="login-form-content">
+            <label>Usuario:</label>
+            <input type="text" id="login-username">
 
-        <label>Contraseña:</label>
-        <input type="password" id="login-password">
+            <label>Contraseña:</label>
+            <input type="password" id="login-password">
 
-        <button id="btn-submit-login">Ingresar</button>
+            <button id="btn-submit-login">Ingresar</button>
+        </div>
+        
+        <div id="register-form-content" style="display:none;">
+            <label>Usuario:</label>
+            <input type="text" id="register-username">
+            
+            <label>Email:</label>
+            <input type="email" id="register-email">
+
+            <label>Contraseña:</label>
+            <input type="password" id="register-password">
+            
+            <label>Confirmar Contraseña:</label>
+            <input type="password" id="register-password-confirm">
+            
+            <button id="btn-submit-register">Registrarse</button>
+        </div>
+
+        <button id="btn-toggle-form" class="btn-toggle-form">¿No tienes cuenta? Regístrate</button>
         <button id="btn-cerrar-login" class="btn-cerrar">Cancelar</button>
+    </div>
+</div>
+
+<!-- POPUP REGISTRAR PELICULA -->
+<div id="popup-add-movie" class="popup">
+    <div class="popup-content-login">
+        <h3>🎬 Agregar Nueva Película</h3> 
+
+        <form id="add-movie-form-tag"> 
+            <div id="add-movie-form-content" class="popup-form-content">
+                <label>Título:</label>
+                <input type="text" id="add-movie-title" required>
+
+                <label>Sinopsis:</label>
+                <textarea id="add-movie-sinopsis" rows="4" required></textarea>
+                
+                <label>Director:</label>
+                <input type="text" id="add-movie-director" required>
+
+                <label>Elenco:</label>
+                <input type="text" id="add-movie-cast" required>
+                
+                <label>Género:</label>
+                <input type="text" id="add-movie-genre" required>
+                
+                <label>Año:</label>
+                <input type="number" id="add-movie-year" required>
+
+                <label>URL del Poster (Opcional):</label>
+                <input type="url" id="add-movie-poster-url">
+
+                <button type="submit" id="btn-submit-add-movie" class="btn-add-movie">Guardar Película</button>
+            </div>
+        </form>
+        
+        <button id="btn-cerrar-add-movie" class="btn-cerrar">Cancelar</button>
     </div>
 </div>
 
